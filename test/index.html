@@ -18,11 +18,14 @@
 <body>
     <div id="main">
         <h1>Zephyr Test Suite<h1>
-        <textarea name="" id="text" cols="100" rows="10"></textarea>    
+        <textarea id="text"></textarea>    
     </div>
 </body>
+<script src="../external/jquery/jquery.js"></script>
 <script src="../src/main.js"></script>
 <script>
-    document.getElementById("text").innerHTML = zephyr.hello;
+    $(document).ready(function(){
+        $("#text").zephyr({"cols":"200","rows":"20"});
+    });
 </script>
 </html>

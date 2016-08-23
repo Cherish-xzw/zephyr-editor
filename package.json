@@ -18,7 +18,9 @@
     "url": "https://github.com/Cherish-xzw/zephyr-editor/issues"
   },
   "homepage": "https://github.com/Cherish-xzw/zephyr-editor#readme",
-  "dependencies": {},
+  "dependencies": {
+    "jquery":">=1.5"
+  },
   "devDependencies": {
     "gulp": "3.9.0",
     "gulp-clean": "^0.3.2",
