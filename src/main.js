@@ -10,9 +10,9 @@
 
     var pluginName = 'zephyr',
         defaults = {
-            cols: "100",
-            rows: "10",
-            backgroundcolor : "#FFFEEE"
+            width: "700px",
+            height: "300px",
+            border: "#000000 1px solid"
         };
 
     //构造函数
@@ -30,36 +30,57 @@
         this.init();
     }
 
+    //创建工具栏和容器div以及iframe
+    var editorContainer = document.createElement("div"),
+        editorToolbar = document.createElement("div"),
+        editorIframe = document.createElement("iframe"),
+        boldBtn = document.createElement("input");
+
+    //并将DOM对象转化成jQuery对象
+    var $editorContainer = $(editorContainer),
+        $editorToolbar = $(editorToolbar),
+        $editorIframe = $(editorIframe),
+        $boldBtn = $(boldBtn);
+
+    var iframeDocument = {};
+
     Plugin.prototype.init = function () {
-        //创建工具栏和容器div并转化成jQuery对象
-        var editorContainer = document.createElement("div"),
-            editorToolbar = document.createElement("div");
-        var $editorContainer =  $(editorContainer)
-        var $editorToolbar = $(editorToolbar)
+        //隐藏原有的textarea
+        var $textarea = $(this.element);
+        $textarea.css("display", "none");
 
         $editorContainer.addClass("zephyr-container");
         $editorToolbar.addClass("zephyr-toolbar");
-        //初始化textarea的样式
-        var $textarea = $(this.element);
-        $textarea
-        .attr({
-            "cols": this.options.cols,
-            "rows": this.options.rows
-        })
-        .css({
-            "background-color":this.options.backgroundcolor,
-        })
-        .before($editorContainer)
-        .before($editorToolbar);
+        $editorIframe.attr("id", "zephyr-iframe");
+        $boldBtn.attr({
+            type: "button",
+            value: "B"
+        });
+
+        $editorIframe.css({
+            border: this.options.border,
+            width: this.options.width,
+            height: this.options.height
+        });
+
+        $textarea.before($editorToolbar);
+        $textarea.before($editorIframe);
+
+        $editorToolbar.append($boldBtn);
+
+        iframeDocument = editorIframe.contentWindow.document;
+        iframeDocument.designMode = "On";
+        $boldBtn.bind("click", features.iBold(iframeDocument));
+
     }
 
-    Plugin.prototype.html = function(){
-        var $this = $(this);
-        // alert($this.html());
-        alert("hello")
+    var features = {
+        iBold: function (iDocument) {
+            alert("clicked.")
+            iDocument.execCommand("bold", false, null);
+        }
     }
 
-    
     $.fn[pluginName] = function (options) {
         return this.each(function () {
             //查询$.data中存储的插件，避免重复实例化多个插件 
@@ -68,18 +89,5 @@
             }
         });
     }
-
-    var features = {
-        paragraphFormat: function () {
-            $(window).bind('click.zephyr', events.click);
-        },
-    }
-
-    var events = {
-        click: function () {
-            alert("click");
-        },
-    }
-
     //传入jQuery可以确保$始终指向jQuery    
 })(jQuery, window, document);
