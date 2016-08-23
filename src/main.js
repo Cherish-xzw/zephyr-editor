@@ -20,8 +20,8 @@
         this.element = element;
 
         //$.extend能够合并两个或两个以上的objects并把合并结果
-        //存储在第一个对象里面.第一个对象通常是{},因为我们不想
-        //让实例对象修改默认的设置
+        //存储在第一个对象里面.第一个对象通常是{},因为不能让实例
+        //对象修改默认的设置
         this.options = $.extend({}, defaults, options);
 
         this._defaults = defaults;
@@ -31,6 +31,14 @@
     }
 
     Plugin.prototype.init = function () {
+        //创建工具栏和容器div并转化成jQuery对象
+        var editorContainer = document.createElement("div"),
+            editorToolbar = document.createElement("div");
+        var $editorContainer =  $(editorContainer)
+        var $editorToolbar = $(editorToolbar)
+
+        $editorContainer.addClass("zephyr-container");
+        $editorToolbar.addClass("zephyr-toolbar");
         //初始化textarea的样式
         var $textarea = $(this.element);
         $textarea
@@ -40,7 +48,15 @@
         })
         .css({
             "background-color":this.options.backgroundcolor,
-        });
+        })
+        .before($editorContainer)
+        .before($editorToolbar);
+    }
+
+    Plugin.prototype.html = function(){
+        var $this = $(this);
+        // alert($this.html());
+        alert("hello")
     }
 
     

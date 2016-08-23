@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Zephyr editor test</title>
+</head>
+<script src="../external/jquery/jquery.js"></script>
+<script src="../src/main.js"></script>
+<script>
+        $(document).ready(function(){
+            var editor = $("#text").zephyr();
+            console.log(editor)
+            $("input[name=getHtml]").click(function(e){
+                // alert(editor.html());
+                $("#text").zephyr().html();
+            });
+        });
+</script>
+<style>
+    body {
+        text-align: center;
+    }
+    
+    #main {
+        margin: 0 auto;
+    }
+</style>
+<body>
+ <div class="main">
+     <h1>Zephyr Editor Test</h1>
+	<form>
+		<textarea name="content" id="text" style="width:988px;height:200px;"></textarea>
+		<p>
+			<input type="button" name="getHtml" value="Get HTML" />
+			<input type="button" name="isEmpty" value="Is Empty" />
+			<input type="button" name="getText" value="Get text(includes img and embed)" />
+			<input type="button" name="selectedHtml" value="Get selected HTML" />
+		</p>
+		<p>
+			<input type="button" name="setHtml" value="Set HTML" />
+			<input type="button" name="setText" value="Set text" />
+			<input type="button" name="insertHtml" value="Insert HTML" />
+			<input type="button" name="appendHtml" value="Append HTML" />
+			<input type="button" name="clear" value="Clear" />
+			<input type="reset" name="reset" value="Reset" />
+		</p>
+	</form>
+</div>
+</body>
+
+</html>
