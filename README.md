@@ -8,7 +8,7 @@ First of all , you need to create a dom element called textarea.
 Then , add the zephyr.js to your HTML script tag . Note that , you need to import jQuery first.
 ``` javascript
 <script src="../external/jquery/jquery.js"></script>
-<script src="../src/main.js"></script>
+<script src="../dist/jquery.zephyr.js"></script>
 <script>
     $(document).ready(function(){
         $("#text").zephyr({"cols":"200","rows":"20"});

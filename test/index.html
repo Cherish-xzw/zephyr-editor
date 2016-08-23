@@ -16,16 +16,32 @@
 </style>
 
 <body>
-    <div id="main">
-        <h1>Zephyr Test Suite<h1>
-        <textarea id="text"></textarea>    
-    </div>
+    <div class="main">
+	<h1>Zephyr Test Suite<h1>
+	<form>
+		<textarea name="content" id="text" style="width:988px;height:200px;"></textarea>
+		<p>
+			<input type="button" name="getHtml" value="Get HTML" />
+			<input type="button" name="isEmpty" value="Is Empty" />
+			<input type="button" name="getText" value="Get text(includes img and embed)" />
+			<input type="button" name="selectedHtml" value="Get selected HTML" />
+		</p>
+		<p>
+			<input type="button" name="setHtml" value="Set HTML" />
+			<input type="button" name="setText" value="Set text" />
+			<input type="button" name="insertHtml" value="Insert HTML" />
+			<input type="button" name="appendHtml" value="Append HTML" />
+			<input type="button" name="clear" value="Clear" />
+			<input type="reset" name="reset" value="Reset" />
+		</p>
+	</form>
+</div>
 </body>
 <script src="../external/jquery/jquery.js"></script>
 <script src="../src/main.js"></script>
 <script>
     $(document).ready(function(){
-        $("#text").zephyr({"cols":"200","rows":"20"});
+        $("#text").zephyr();
     });
 </script>
 </html>
