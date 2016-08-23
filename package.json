@@ -1,0 +1,24 @@
+{
+  "name": "zephyr-editor",
+  "version": "1.0.0",
+  "description": "A lightweight rich text editor.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cherish-xzw/zephyr-editor.git"
+  },
+  "keywords": [
+    "rich",
+    "text",
+    "editor"
+  ],
+  "author": "zhengwei xu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Cherish-xzw/zephyr-editor/issues"
+  },
+  "homepage": "https://github.com/Cherish-xzw/zephyr-editor#readme"
+}
