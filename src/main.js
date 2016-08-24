@@ -107,6 +107,11 @@
         var iframeDocument = $iframe.prop("contentWindow").document
             || $iframe.prop("contentDocument");
         iframeDocument.designMode = "On";
+        console.log("------ 3 -----", $iframe[0].contentWindow.document.body);
+        setTimeout(function () {
+            $iframe[0].contentWindow.document.body.setAttribute("contenteditable", true);
+        }, 0);
+
         var fragment = document.createDocumentFragment();
         var features = this._defaults.buttons.features
         //为toolbar添加功能按钮    
@@ -143,9 +148,8 @@
         });
 
         //内部函数，用来执行命令
-        function _execute(command, vaule) {
+        function _execute(command, value) {
             try {
-                alert(command)
                 iframeDocument.execCommand(command, false, value);
                 iframeDocument.contentWindow.focus();
             } catch (error) {
