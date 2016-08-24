@@ -12,7 +12,47 @@
         defaults = {
             width: "700px",
             height: "300px",
-            border: "#000000 1px solid"
+            border: "#000000 1px solid",
+            buttons: {
+                fontName: {
+                    "宋体": "SimSun",
+                    "隶书": "LiSu",
+                    "楷体": "KaiTi_GB2312",
+                    "幼圆": "YouYuan",
+                    "黑体": "SimHei",
+                    "雅黑": "Microsoft YaHei",
+                    "仿宋": "FabgSong",
+                    "Comic Sans MS": "Comic Sans MS"
+                },
+                fontSize: {
+                    "特小": 1,
+                    "很小": 2,
+                    "小": 3,
+                    "中": 4,
+                    "大": 5,
+                    "很大": 6,
+                    "特大": 7
+                },
+                features: {
+                    "removeformat": "还原",
+                    "bold": "加粗",
+                    "italic": "斜体",
+                    "underline": "下划线",
+                    "strikethrough": "删除线",
+                    "justifyleft": "居左",
+                    "justifycenter": "居中",
+                    "justifyright": "居右",
+                    "indent": "缩进",
+                    "outdent": "悬挂",
+                    "forecolor": "前景色",
+                    "backcolor": "背景色",
+                    "createlink": "超链接",
+                    "insertimage": "插图",
+                    "insertorderlist": "有序列表",
+                    "insertunorderlist": "无序列表",
+                    "html": "查看"
+                }
+            }
         };
 
     //构造函数
@@ -30,56 +70,93 @@
         this.init();
     }
 
-    //创建工具栏和容器div以及iframe
-    var editorContainer = document.createElement("div"),
-        editorToolbar = document.createElement("div"),
-        editorIframe = document.createElement("iframe"),
-        boldBtn = document.createElement("input");
-
-    //并将DOM对象转化成jQuery对象
-    var $editorContainer = $(editorContainer),
-        $editorToolbar = $(editorToolbar),
-        $editorIframe = $(editorIframe),
-        $boldBtn = $(boldBtn);
-
-    var iframeDocument = {};
-
     Plugin.prototype.init = function () {
-        //隐藏原有的textarea
-        var $textarea = $(this.element);
-        $textarea.css("display", "none");
-
-        $editorContainer.addClass("zephyr-container");
-        $editorToolbar.addClass("zephyr-toolbar");
-        $editorIframe.attr("id", "zephyr-iframe");
-        $boldBtn.attr({
-            type: "button",
-            value: "B"
-        });
-
-        $editorIframe.css({
-            border: this.options.border,
-            width: this.options.width,
-            height: this.options.height
-        });
-
-        $textarea.before($editorToolbar);
-        $textarea.before($editorIframe);
-
-        $editorToolbar.append($boldBtn);
-
-        iframeDocument = editorIframe.contentWindow.document;
-        iframeDocument.designMode = "On";
-        $boldBtn.bind("click", features.iBold(iframeDocument));
-
+        this.createEditor();
     }
 
-    var features = {
-        iBold: function (iDocument) {
-            alert("clicked.")
-            iDocument.execCommand("bold", false, null);
+    Plugin.prototype.createEditor = function () {
+
+        //创建相应的DOM节点
+        var $textarea = $(this.element),
+            $toolbar = $("<div></div>"),
+            $iframe = $("<iframe></iframe>"),
+            $br = $("</br>"),
+            $btn = $("<button></button>");
+
+        //隐藏原有的textarea
+        $textarea
+            .css("display", "none")
+            .before($toolbar)
+            .before($br)
+            .before($iframe);
+
+        //设置iframe的默认样式
+        $iframe
+            .css({
+                border: this.options.border,
+                width: this.options.width,
+                height: this.options.height
+            })
+            .attr("id", "zephyr-iframe");
+
+        $toolbar
+            .addClass("zephyr-toolbar")
+            .attr("id", "zephyr-toolbar");
+
+        //获取iframe的document
+        var iframeDocument = $iframe.prop("contentWindow").document
+            || $iframe.prop("contentDocument");
+        iframeDocument.designMode = "On";
+        var fragment = document.createDocumentFragment();
+        var features = this._defaults.buttons.features
+        //为toolbar添加功能按钮    
+        for (var i in features) {
+            $btn
+                .clone()
+                .appendTo($toolbar)
+                .text(features[i])
+                .attr("title", i);
+            // $toolbar[i] = $btn;
+            // fragment.appendChild($btn[0]);
+        }
+        // $toolbar.append($(fragment));
+
+        //为toolbar绑定事件
+        this.addEvent($toolbar, "click", function (event) {
+            command = $(event.target).attr("title");
+            switch (command) {
+                case "createlink":
+                case "insertimage":
+                    var value = prompt("请输入URL地址", "http://");
+                    _execute(command, value);
+                    break;
+                case "fontname":
+                case "fontsize":
+                case "forecolor":
+                case "backcolor":
+                case "html":
+                    return;
+                default:
+                    _execute(command, null);
+                    break;
+            }
+        });
+
+        //内部函数，用来执行命令
+        function _execute(command, vaule) {
+            try {
+                alert(command)
+                iframeDocument.execCommand(command, false, value);
+                iframeDocument.contentWindow.focus();
+            } catch (error) {
+
+            }
         }
     }
+
+    Plugin.prototype.addEvent = function ($ele, type, fn) {
+        $ele.bind(type, fn);
+    };
 
     $.fn[pluginName] = function (options) {
         return this.each(function () {
