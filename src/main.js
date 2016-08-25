@@ -8,8 +8,48 @@
     //的ECMAScript标准中可以对undefined重新
     //赋值，这样做可以确保undefined值不被修改
 
-    var pluginName = 'zephyr',
-        defaults = {
+
+    var pluginName = 'zephyr';
+
+    //jQuery 1.9以上版本移除了$.brower，这里加上以支持高版本
+    if ($.browser === undefined) {
+        $.browser = (function () {
+            var ua_match = function (ua) {
+                ua = ua.toLowerCase();
+                var match = /(chrome)[ \/]([\w.]+)/.exec(ua) ||
+                    /(webkit)[ \/]([\w.]+)/.exec(ua) ||
+                    /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua) ||
+                    /(msie) ([\w.]+)/.exec(ua) ||
+                    ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua) ||
+                    [];
+
+                return { browser: match[1] || "", version: match[2] || "0" };
+            },
+                matched = ua_match(navigator.userAgent),
+                browser = {};
+
+            if (matched.browser) {
+                browser[matched.browser] = true;
+                browser.version = matched.version;
+            }
+
+            if (browser.chrome) {
+                browser.webkit = true;
+            } else if (browser.webkit) {
+                browser.safari = true;
+            }
+            return browser;
+        })();
+    }
+
+
+    //构造函数
+    function Plugin(element, options) {
+
+        //<----------------成员变量开始----------------->        
+
+        //默认设置
+        this.defaults = {
             width: "700px",
             height: "300px",
             border: "#000000 1px solid",
@@ -55,22 +95,22 @@
             }
         };
 
-    //构造函数
-    function Plugin(element, options) {
         this.element = element;
 
         //$.extend能够合并两个或两个以上的objects并把合并结果
         //存储在第一个对象里面.第一个对象通常是{},因为不能让实例
         //对象修改默认的设置
-        this.options = $.extend({}, defaults, options);
+        this.options = $.extend({}, this.defaults, options);
 
-        this._defaults = defaults;
         this._name = pluginName;
 
-        this.init();
+        //<----------------成员变量结束----------------->
+
+        this.init(element, options);
     }
 
-    Plugin.prototype.init = function () {
+    //      <----------------成员函数开始----------------->
+    Plugin.prototype.init = function (element, options) {
         this.createEditor();
     }
 
@@ -113,7 +153,7 @@
             $iframe[0].contentWindow.document.body.setAttribute("contenteditable", true);
         }, 0);
 
-        var features = this._defaults.buttons.features
+        var features = this.defaults.buttons.features
         //为toolbar添加功能按钮    
         for (var i in features) {
             $btn
@@ -194,6 +234,7 @@
         // });
 
     }
+    //      <----------------成员函数结束----------------->
 
     $.fn[pluginName] = function (options) {
         return this.each(function () {
