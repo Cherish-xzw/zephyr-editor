@@ -53,6 +53,7 @@
             width: "700px",
             height: "300px",
             border: "#000000 1px solid",
+            iframeClass:"zephyr-iframe",
             fontName: {
                 "宋体": "SimSun",
                 "隶书": "LiSu",
@@ -96,13 +97,13 @@
         };
 
         this.element = element;
+        this.editor = null;
 
         //$.extend能够合并两个或两个以上的objects并把合并结果
         //存储在第一个对象里面.第一个对象通常是{},因为不能让实例
         //对象修改默认的设置
         this.options = $.extend({}, this.defaults, options);
 
-        this._name = pluginName;
 
         //<----------------成员变量结束----------------->
 
@@ -111,6 +112,7 @@
 
     //      <----------------成员函数开始----------------->
     Plugin.prototype.init = function (element, options) {
+        this.editor = $("<iframe></iframe>").addClass(this.defaults.iframeClass);
         this.createEditor();
     }
 
