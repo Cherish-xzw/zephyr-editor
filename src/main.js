@@ -13,26 +13,26 @@
             width: "700px",
             height: "300px",
             border: "#000000 1px solid",
+            fontName: {
+                "宋体": "SimSun",
+                "隶书": "LiSu",
+                "楷体": "KaiTi_GB2312",
+                "幼圆": "YouYuan",
+                "黑体": "SimHei",
+                "雅黑": "Microsoft YaHei",
+                "仿宋": "FabgSong",
+                "Comic Sans MS": "Comic Sans MS"
+            },
+            fontSize: {
+                "特小": 1,
+                "很小": 2,
+                "小": 3,
+                "中": 4,
+                "大": 5,
+                "很大": 6,
+                "特大": 7
+            },
             buttons: {
-                fontName: {
-                    "宋体": "SimSun",
-                    "隶书": "LiSu",
-                    "楷体": "KaiTi_GB2312",
-                    "幼圆": "YouYuan",
-                    "黑体": "SimHei",
-                    "雅黑": "Microsoft YaHei",
-                    "仿宋": "FabgSong",
-                    "Comic Sans MS": "Comic Sans MS"
-                },
-                fontSize: {
-                    "特小": 1,
-                    "很小": 2,
-                    "小": 3,
-                    "中": 4,
-                    "大": 5,
-                    "很大": 6,
-                    "特大": 7
-                },
                 features: {
                     "removeformat": "还原",
                     "bold": "加粗",
@@ -42,14 +42,14 @@
                     "justifyleft": "居左",
                     "justifycenter": "居中",
                     "justifyright": "居右",
-                    "indent": "缩进",
-                    "outdent": "悬挂",
-                    "forecolor": "前景色",
-                    "backcolor": "背景色",
+                    "indent": "增加缩进",
+                    "outdent": "减少缩进",
+                    "insertorderedlist": "有序列表",
+                    "insertunorderedlist": "无序列表",
                     "createlink": "超链接",
                     "insertimage": "插图",
-                    "insertorderlist": "有序列表",
-                    "insertunorderlist": "无序列表",
+                    "forecolor": "前景色",
+                    "backcolor": "背景色",
                     "html": "查看"
                 }
             }
@@ -107,12 +107,12 @@
         var iframeDocument = $iframe.prop("contentWindow").document
             || $iframe.prop("contentDocument");
         iframeDocument.designMode = "On";
-        console.log("------ 3 -----", $iframe[0].contentWindow.document.body);
+
+        //适配FireFox
         setTimeout(function () {
             $iframe[0].contentWindow.document.body.setAttribute("contenteditable", true);
         }, 0);
 
-        var fragment = document.createDocumentFragment();
         var features = this._defaults.buttons.features
         //为toolbar添加功能按钮    
         for (var i in features) {
@@ -121,13 +121,11 @@
                 .appendTo($toolbar)
                 .text(features[i])
                 .attr("title", i);
-            // $toolbar[i] = $btn;
-            // fragment.appendChild($btn[0]);
+            $toolbar[i] = $btn;
         }
-        // $toolbar.append($(fragment));
 
         //为toolbar绑定事件
-        this.addEvent($toolbar, "click", function (event) {
+        $toolbar.bind("click", function (event) {
             command = $(event.target).attr("title");
             switch (command) {
                 case "createlink":
@@ -139,8 +137,17 @@
                 case "fontsize":
                 case "forecolor":
                 case "backcolor":
-                case "html":
                     return;
+                case "html":
+                    (function () {
+                        if (switchEditMode) {
+                            _switchToHTML();
+                            switchEditMode = false;
+                        } else {
+                            _switchToEditor();
+                            switchEditMode = true;
+                        }
+                    })();
                 default:
                     _execute(command, null);
                     break;
@@ -156,11 +163,37 @@
 
             }
         }
-    }
 
-    Plugin.prototype.addEvent = function ($ele, type, fn) {
-        $ele.bind(type, fn);
-    };
+        //切换到HTML代码
+        function _switchToHTML() {
+            $iframe.css("display", "none");
+            $textarea
+                .css("display", "block")
+                .val(iframeDocument.body.innerHTML)
+                .focus();
+        }
+
+        //切换到富文本编辑模式
+        function _switchToEditor() {
+            $iframe.css("display", "block");
+            $textarea.css("display", "none");
+            iframeDocument.body.innerHTML = $textarea.val();
+            $iframe.prop("contentWindow").focus();
+        }
+
+        //为查看按钮绑定点击事件
+        var switchEditMode = true;
+        // $toolbar['html'].bind('click', function (event) {
+        //     if (switchEditMode) {
+        //         _switchToHTML();
+        //         switchEditMode = false;
+        //     } else {
+        //         _switchToEditor();
+        //         switchEditMode = true;
+        //     }
+        // });
+
+    }
 
     $.fn[pluginName] = function (options) {
         return this.each(function () {
