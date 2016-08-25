@@ -8,10 +8,10 @@
     //的ECMAScript标准中可以对undefined重新
     //赋值，这样做可以确保undefined值不被修改
 
-
     var pluginName = 'zephyr';
 
     //jQuery 1.9以上版本移除了$.brower，这里加上以支持高版本
+    //TODO 根据UA判断浏览器的版本不一定可靠，有更好的方法时移除此方法
     if ($.browser === undefined) {
         $.browser = (function () {
             var ua_match = function (ua) {
@@ -42,7 +42,6 @@
         })();
     }
 
-
     //构造函数
     function Plugin(element, options) {
 
@@ -53,7 +52,8 @@
             width: "700px",
             height: "300px",
             border: "#000000 1px solid",
-            iframeClass:"zephyr-iframe",
+            iframeClass: "zephyr-iframe",
+            toolbarClass: "zephyr-toolbar",
             fontName: {
                 "宋体": "SimSun",
                 "隶书": "LiSu",
@@ -98,6 +98,12 @@
 
         this.element = element;
         this.editor = null;
+        this.iframeDocument = null;
+        //与界面相关的成员变量
+        this.ui = {};
+        this.ui.self = this;
+        this.ui.toolbar = null;
+
 
         //$.extend能够合并两个或两个以上的objects并把合并结果
         //存储在第一个对象里面.第一个对象通常是{},因为不能让实例
@@ -110,64 +116,57 @@
         this.init(element, options);
     }
 
-    //      <----------------成员函数开始----------------->
+    //<----------------成员函数开始----------------->
     Plugin.prototype.init = function (element, options) {
-        this.editor = $("<iframe></iframe>").addClass(this.defaults.iframeClass);
-        this.createEditor();
-    }
+        var self = this;
 
-    Plugin.prototype.createEditor = function () {
-
-        //创建相应的DOM节点
-        var $textarea = $(this.element),
-            $toolbar = $("<div></div>"),
-            $iframe = $("<iframe></iframe>"),
-            $br = $("</br>"),
-            $btn = $("<button></button>");
-
+        this.initIFrame();
+        this.initToolbar();
         //隐藏原有的textarea
-        $textarea
+        $(this.element)
             .css("display", "none")
-            .before($toolbar)
-            .before($br)
-            .before($iframe);
-
-        //设置iframe的默认样式
-        $iframe
-            .css({
-                border: this.options.border,
-                width: this.options.width,
-                height: this.options.height
-            })
-            .attr("id", "zephyr-iframe");
-
-        $toolbar
-            .addClass("zephyr-toolbar")
-            .attr("id", "zephyr-toolbar");
+            .after(this.editor)
+            .after(this.ui.toolbar);
 
         //获取iframe的document
-        var iframeDocument = $iframe.prop("contentWindow").document
-            || $iframe.prop("contentDocument");
-        iframeDocument.designMode = "On";
+        this.iframeDocument = this.editor.prop("contentWindow").document
+            || this.editor.prop("contentDocument");
+        this.iframeDocument.designMode = "On";
 
         //适配FireFox
-        setTimeout(function () {
-            $iframe[0].contentWindow.document.body.setAttribute("contenteditable", true);
-        }, 0);
+        this.editor.prop("contentWindow").document.body.setAttribute("contenteditable", true);
+    }
 
+    Plugin.prototype.initIFrame = function () {
+        //设置iframe的默认样式
+        this.editor =
+            $("<iframe></iframe>")
+                .addClass(this.options.iframeClass)
+                .css({
+                    border: this.options.border,
+                    width: this.options.width,
+                    height: this.options.height
+                });
+    }
+
+    Plugin.prototype.initToolbar = function () {
+        var self = this;
+        this.ui.toolbar =
+            $("<div><!-- --></div>")
+                .addClass(this.options.toolbarClass);
+        var $btn = $("<button></button>");
         var features = this.defaults.buttons.features
         //为toolbar添加功能按钮    
         for (var i in features) {
             $btn
                 .clone()
-                .appendTo($toolbar)
+                .appendTo(this.ui.toolbar)
                 .text(features[i])
                 .attr("title", i);
-            $toolbar[i] = $btn;
+            this.ui.toolbar[i] = $btn;
         }
-
         //为toolbar绑定事件
-        $toolbar.bind("click", function (event) {
+        this.ui.toolbar.bind("click", function (event) {
             command = $(event.target).attr("title");
             switch (command) {
                 case "createlink":
@@ -198,9 +197,10 @@
 
         //内部函数，用来执行命令
         function _execute(command, value) {
+            //进入此函数之后this变成了window,所以事先把this变成self
             try {
-                iframeDocument.execCommand(command, false, value);
-                iframeDocument.contentWindow.focus();
+                self.iframeDocument.execCommand(command, false, value);
+                self.iframeDocument.contentWindow.focus();
             } catch (error) {
 
             }
@@ -208,35 +208,25 @@
 
         //切换到HTML代码
         function _switchToHTML() {
-            $iframe.css("display", "none");
+            this.editor.css("display", "none");
             $textarea
                 .css("display", "block")
-                .val(iframeDocument.body.innerHTML)
+                .val(this.iframeDocument.body.innerHTML)
                 .focus();
         }
 
         //切换到富文本编辑模式
         function _switchToEditor() {
-            $iframe.css("display", "block");
+            this.editor.css("display", "block");
             $textarea.css("display", "none");
-            iframeDocument.body.innerHTML = $textarea.val();
-            $iframe.prop("contentWindow").focus();
+            this.iframeDocument.body.innerHTML = $textarea.val();
+            this.editor.prop("contentWindow").focus();
         }
 
         //为查看按钮绑定点击事件
         var switchEditMode = true;
-        // $toolbar['html'].bind('click', function (event) {
-        //     if (switchEditMode) {
-        //         _switchToHTML();
-        //         switchEditMode = false;
-        //     } else {
-        //         _switchToEditor();
-        //         switchEditMode = true;
-        //     }
-        // });
-
     }
-    //      <----------------成员函数结束----------------->
+    //<----------------成员函数结束----------------->
 
     $.fn[pluginName] = function (options) {
         return this.each(function () {
