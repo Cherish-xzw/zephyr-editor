@@ -54,6 +54,7 @@
             border: "#000000 1px solid",
             iframeClass: "zephyr-iframe",
             toolbarClass: "zephyr-toolbar",
+            toolbarBtnClass:"zephyr-button",
             fontName: {
                 "宋体": "SimSun",
                 "隶书": "LiSu",
@@ -89,12 +90,32 @@
                     "insertunorderedlist": "无序列表",
                     "createlink": "超链接",
                     "insertimage": "插图",
-                    "forecolor": "前景色",
-                    "backcolor": "背景色",
                     "html": "查看"
                 }
             }
         };
+
+        this.conmmands = {
+            features: {
+                "removeformat": "还原",
+                "bold": "加粗",
+                "italic": "斜体",
+                "underline": "下划线",
+                "strikethrough": "删除线",
+                "justifyleft": "居左",
+                "justifycenter": "居中",
+                "justifyright": "居右",
+                "indent": "增加缩进",
+                "outdent": "减少缩进",
+                "insertorderedlist": "有序列表",
+                "insertunorderedlist": "无序列表",
+                "createlink": "超链接",
+                "insertimage": "插图",
+                "forecolor": "前景色",
+                "backcolor": "背景色",
+                "html": "查看"
+            }
+        }
 
         this.element = element;
         this.editor = null;
@@ -120,59 +141,65 @@
     Plugin.prototype.init = function (element, options) {
         var self = this;
 
-        this.initIFrame();
-        this.initToolbar();
+        self.initIFrame();
+        self.initToolbar();
         //隐藏原有的textarea
-        $(this.element)
-            .css("display", "none")
-            .after(this.editor)
-            .after(this.ui.toolbar);
-
-        //获取iframe的document
-        this.iframeDocument = this.editor.prop("contentWindow").document
-            || this.editor.prop("contentDocument");
-        this.iframeDocument.designMode = "On";
-
-        //适配FireFox
-        this.editor.prop("contentWindow").document.body.setAttribute("contenteditable", true);
+        $(self.element)
+            .hide()
+            .before(self.ui.toolbar)
+            .before(self.editor);
     }
 
     Plugin.prototype.initIFrame = function () {
+        var self = this;
+
         //设置iframe的默认样式
-        this.editor =
+        self.editor =
             $("<iframe></iframe>")
-                .addClass(this.options.iframeClass)
+                .addClass(self.options.iframeClass)
                 .css({
-                    border: this.options.border,
-                    width: this.options.width,
-                    height: this.options.height
+                    border: self.options.border,
+                    width: self.options.width,
+                    height: self.options.height
+                })
+                .on("load.zephyr", function () {
+                    //获取iframe的document
+                    self.iframeDocument = self.editor.prop("contentWindow").document
+                        || self.editor.prop("contentDocument");
+                    self.iframeDocument.designMode = "On";
+                    self.iframeDocument.body.setAttribute("contenteditable", true);
                 });
+        ;
     }
 
     Plugin.prototype.initToolbar = function () {
         var self = this;
-        this.ui.toolbar =
-            $("<div><!-- --></div>")
-                .addClass(this.options.toolbarClass);
-        var $btn = $("<button></button>");
-        var features = this.defaults.buttons.features
+
+        //初始化toolbar的按钮
+        self.ui.toolbar =
+            $("<div></div>")
+                .addClass(self.options.toolbarClass);
+        var $btn = 
+            $("<button></button>")
+                .addClass(self.options.toolbarBtnClass);
+        var features = self.defaults.buttons.features
         //为toolbar添加功能按钮    
         for (var i in features) {
             $btn
                 .clone()
-                .appendTo(this.ui.toolbar)
+                .appendTo(self.ui.toolbar)
                 .text(features[i])
                 .attr("title", i);
-            this.ui.toolbar[i] = $btn;
+            self.ui.toolbar[i] = $btn;
         }
-        //为toolbar绑定事件
-        this.ui.toolbar.bind("click", function (event) {
+        var switchEditMode = true;
+        self.ui.toolbar.bind("click.zephyr", function (event) {
             command = $(event.target).attr("title");
             switch (command) {
                 case "createlink":
                 case "insertimage":
                     var value = prompt("请输入URL地址", "http://");
-                    _execute(command, value);
+                    self.execute(command, value);
                     break;
                 case "fontname":
                 case "fontsize":
@@ -182,49 +209,53 @@
                 case "html":
                     (function () {
                         if (switchEditMode) {
-                            _switchToHTML();
+                            self.switchToHTML();
                             switchEditMode = false;
                         } else {
-                            _switchToEditor();
+                            self.switchToEditor();
                             switchEditMode = true;
                         }
                     })();
                 default:
-                    _execute(command, null);
+                    self.execute(command, null);
                     break;
             }
         });
+    }
 
-        //内部函数，用来执行命令
-        function _execute(command, value) {
-            //进入此函数之后this变成了window,所以事先把this变成self
-            try {
-                self.iframeDocument.execCommand(command, false, value);
-                self.iframeDocument.contentWindow.focus();
-            } catch (error) {
+    Plugin.prototype.execute = function (command, value) {
+        var self = this;
+        try {
+            self.iframeDocument.execCommand(command, false, value);
+            self.iframeDocument.contentWindow.focus();
+        } catch (error) {
 
-            }
         }
+    }
 
-        //切换到HTML代码
-        function _switchToHTML() {
-            this.editor.css("display", "none");
-            $textarea
-                .css("display", "block")
-                .val(this.iframeDocument.body.innerHTML)
-                .focus();
-        }
+    Plugin.prototype.switchToHTML = function () {
+        var self = this;
 
-        //切换到富文本编辑模式
-        function _switchToEditor() {
-            this.editor.css("display", "block");
-            $textarea.css("display", "none");
-            this.iframeDocument.body.innerHTML = $textarea.val();
-            this.editor.prop("contentWindow").focus();
-        }
+        self.editor.hide();
+        $(self.element)
+            .show()
+            .val(self.iframeDocument.body.innerHTML)
+            .focus();
+    }
 
-        //为查看按钮绑定点击事件
-        var switchEditMode = true;
+    Plugin.prototype.switchToEditor = function () {
+        var self = this;
+        self.editor.show();
+        $(self.element).hide();
+        self.iframeDocument.body.innerHTML = $(self.element).val();
+        self.editor.prop("contentWindow").focus();
+
+    };
+
+    Plugin.prototype.initColorPicker = function(){
+        var self = this;
+
+        $("<table></table>");
     }
     //<----------------成员函数结束----------------->
 
