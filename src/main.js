@@ -54,7 +54,35 @@
             border: "#000000 1px solid",
             iframeClass: "zephyr-iframe",
             toolbarClass: "zephyr-toolbar",
-            toolbarBtnClass:"zephyr-button",
+            toolbarBtnClass: "zephyr-button"
+        };
+
+        this.commands = {
+            "removeformat": "还原",
+            "bold": "加粗",
+            "italic": "斜体",
+            "underline": "下划线",
+            "strikethrough": "删除线",
+            "justifyleft": "居左",
+            "justifycenter": "居中",
+            "justifyright": "居右",
+            "indent": "增加缩进",
+            "outdent": "减少缩进",
+            "insertorderedlist": "有序列表",
+            "insertunorderedlist": "无序列表",
+            "createlink": "超链接",
+            "insertimage": "插图",
+            "html": "查看"
+        };
+
+        this.element = element;
+        this.editor = null;
+        this.iframeDocument = null;
+        //与界面相关的成员变量
+        this.ui = {};
+        this.ui.self = this;
+        this.ui.toolbar = null;
+        this.ui.font = {
             fontName: {
                 "宋体": "SimSun",
                 "隶书": "LiSu",
@@ -73,57 +101,8 @@
                 "大": 5,
                 "很大": 6,
                 "特大": 7
-            },
-            buttons: {
-                features: {
-                    "removeformat": "还原",
-                    "bold": "加粗",
-                    "italic": "斜体",
-                    "underline": "下划线",
-                    "strikethrough": "删除线",
-                    "justifyleft": "居左",
-                    "justifycenter": "居中",
-                    "justifyright": "居右",
-                    "indent": "增加缩进",
-                    "outdent": "减少缩进",
-                    "insertorderedlist": "有序列表",
-                    "insertunorderedlist": "无序列表",
-                    "createlink": "超链接",
-                    "insertimage": "插图",
-                    "html": "查看"
-                }
             }
         };
-
-        this.conmmands = {
-            features: {
-                "removeformat": "还原",
-                "bold": "加粗",
-                "italic": "斜体",
-                "underline": "下划线",
-                "strikethrough": "删除线",
-                "justifyleft": "居左",
-                "justifycenter": "居中",
-                "justifyright": "居右",
-                "indent": "增加缩进",
-                "outdent": "减少缩进",
-                "insertorderedlist": "有序列表",
-                "insertunorderedlist": "无序列表",
-                "createlink": "超链接",
-                "insertimage": "插图",
-                "forecolor": "前景色",
-                "backcolor": "背景色",
-                "html": "查看"
-            }
-        }
-
-        this.element = element;
-        this.editor = null;
-        this.iframeDocument = null;
-        //与界面相关的成员变量
-        this.ui = {};
-        this.ui.self = this;
-        this.ui.toolbar = null;
 
 
         //$.extend能够合并两个或两个以上的objects并把合并结果
@@ -147,8 +126,15 @@
         $(self.element)
             .hide()
             .before(self.ui.toolbar)
-            .before(self.editor);
-    }
+            .before(self.editor)
+            .css({
+                border: self.options.border,
+                width: self.options.width,
+                height: self.options.height
+            });
+            self.addFeatures();
+
+    };
 
     Plugin.prototype.initIFrame = function () {
         var self = this;
@@ -169,8 +155,7 @@
                     self.iframeDocument.designMode = "On";
                     self.iframeDocument.body.setAttribute("contenteditable", true);
                 });
-        ;
-    }
+    };
 
     Plugin.prototype.initToolbar = function () {
         var self = this;
@@ -179,10 +164,10 @@
         self.ui.toolbar =
             $("<div></div>")
                 .addClass(self.options.toolbarClass);
-        var $btn = 
+        var $btn =
             $("<button></button>")
                 .addClass(self.options.toolbarBtnClass);
-        var features = self.defaults.buttons.features
+        var features = self.commands;
         //为toolbar添加功能按钮    
         for (var i in features) {
             $btn
@@ -192,13 +177,17 @@
                 .attr("title", i);
             self.ui.toolbar[i] = $btn;
         }
+    };
+
+    Plugin.prototype.addFeatures = function () {
+        var self = this;
         var switchEditMode = true;
         self.ui.toolbar.bind("click.zephyr", function (event) {
             command = $(event.target).attr("title");
             switch (command) {
                 case "createlink":
                 case "insertimage":
-                    var value = prompt("请输入URL地址", "http://");
+                    var value = prompt("请输入URL地址");
                     self.execute(command, value);
                     break;
                 case "fontname":
@@ -221,7 +210,7 @@
                     break;
             }
         });
-    }
+    };
 
     Plugin.prototype.execute = function (command, value) {
         var self = this;
@@ -231,7 +220,7 @@
         } catch (error) {
 
         }
-    }
+    };
 
     Plugin.prototype.switchToHTML = function () {
         var self = this;
@@ -241,7 +230,7 @@
             .show()
             .val(self.iframeDocument.body.innerHTML)
             .focus();
-    }
+    };
 
     Plugin.prototype.switchToEditor = function () {
         var self = this;
@@ -252,11 +241,18 @@
 
     };
 
-    Plugin.prototype.initColorPicker = function(){
+    Plugin.prototype.initColorPicker = function () {
         var self = this;
 
-        $("<table></table>");
-    }
+        var hex = ['FF','CC','99','66','33','00'];
+        var $table = $("<table></table>");
+
+    };
+
+    Plugin.prototype.initFontPicker = function(){
+        var self = this;
+        
+    };
     //<----------------成员函数结束----------------->
 
     $.fn[pluginName] = function (options) {
@@ -266,6 +262,6 @@
                 $.data(this, 'plugin_' + pluginName, new Plugin(this, options));
             }
         });
-    }
+    };
     //传入jQuery可以确保$始终指向jQuery    
 })(jQuery, window, document);
