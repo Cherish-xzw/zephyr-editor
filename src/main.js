@@ -72,7 +72,8 @@
             "insertunorderedlist": "无序列表",
             "createlink": "超链接",
             "insertimage": "插图",
-            "html": "查看"
+            "html": "查看",
+            "fontcolor": "字体颜色"
         };
 
         this.element = element;
@@ -132,8 +133,7 @@
                 width: self.options.width,
                 height: self.options.height
             });
-            self.addFeatures();
-
+        self.addFeatures();
     };
 
     Plugin.prototype.initIFrame = function () {
@@ -166,7 +166,8 @@
                 .addClass(self.options.toolbarClass);
         var $btn =
             $("<button></button>")
-                .addClass(self.options.toolbarBtnClass);
+                .addClass(self.options.toolbarBtnClass)
+                .attr("type", "button");
         var features = self.commands;
         //为toolbar添加功能按钮    
         for (var i in features) {
@@ -195,6 +196,11 @@
                 case "forecolor":
                 case "backcolor":
                     return;
+                case "fontcolor":
+                    (function () {
+                        self.initColorPicker();
+                    })();
+                    break;
                 case "html":
                     (function () {
                         if (switchEditMode) {
@@ -205,6 +211,7 @@
                             switchEditMode = true;
                         }
                     })();
+                    break;
                 default:
                     self.execute(command, null);
                     break;
@@ -244,14 +251,17 @@
     Plugin.prototype.initColorPicker = function () {
         var self = this;
 
-        var hex = ['FF','CC','99','66','33','00'];
-        var $table = $("<table></table>");
-
+        var hex = ['FF', 'CC', '99', '66', '33', '00'];
+        var $table = $("<table><tr><td>This is a table</td></tr></table>");
+        $table
+            .css("position","relative")
+            .after(this.toolbar)
+            .toggle();
     };
 
-    Plugin.prototype.initFontPicker = function(){
+    Plugin.prototype.initFontPicker = function () {
         var self = this;
-        
+
     };
     //<----------------成员函数结束----------------->
 
