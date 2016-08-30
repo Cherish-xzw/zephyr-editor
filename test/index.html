@@ -25,8 +25,9 @@
 <body>
 	<div class="main">
 		<h1>Zephyr Editor Test</h1>
-		<form action="/upload" method="POST" >
-			<textarea id="text" name="text" ></textarea>
+		<form action="/upload" method="POST" enctype="multipart/form-data" >
+			<textarea id="text" name="text" ></textarea><br/>
+			<input type="file" name="upload" multiple="multiple"/>
 			<input type="submit" value="Submit" />
 		</form>
 	</div>

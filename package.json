@@ -19,7 +19,8 @@
   },
   "homepage": "https://github.com/Cherish-xzw/zephyr-editor#readme",
   "dependencies": {
-    "jquery":">=1.5"
+    "formidable": "^1.0.17",
+    "jquery": ">=1.5"
   },
   "devDependencies": {
     "gulp": "3.9.0",
@@ -35,6 +36,7 @@
     "packages": "jspm_packages"
   },
   "scripts": {
+    "start": "node index.js",
     "build": "gulp build",
     "prepublish": "jspm install"
   },

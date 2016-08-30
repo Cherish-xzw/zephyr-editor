@@ -3,8 +3,11 @@ var url = require("url");
 var path = require("path");
 var fs = require('fs');
 
-function handleStaticRequest(filePath, response) {
-
+function handleStaticRequest(request, response) {
+    var filePath = '.' + request.url;
+    if (filePath === './') {
+        filePath = './index.html';
+    }
     var extname = String(path.extname(filePath)).toLowerCase();
     var contentType = 'text/html';
     var mimeTypes = {

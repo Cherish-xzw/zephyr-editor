@@ -104,6 +104,7 @@
                 "特大": 7
             }
         };
+        this.viewHTML = true;
 
 
         //$.extend能够合并两个或两个以上的objects并把合并结果
@@ -182,7 +183,6 @@
 
     Plugin.prototype.addFeatures = function () {
         var self = this;
-        var switchEditMode = true;
         self.ui.toolbar.bind("click.zephyr", function (event) {
             command = $(event.target).attr("title");
             switch (command) {
@@ -203,12 +203,12 @@
                     break;
                 case "html":
                     (function () {
-                        if (switchEditMode) {
+                        if (self.viewHTML) {
                             self.switchToHTML();
-                            switchEditMode = false;
+                            self.viewHTML = false;
                         } else {
                             self.switchToEditor();
-                            switchEditMode = true;
+                            self.viewHTML = true;
                         }
                     })();
                     break;
@@ -254,7 +254,7 @@
         var hex = ['FF', 'CC', '99', '66', '33', '00'];
         var $table = $("<table><tr><td>This is a table</td></tr></table>");
         $table
-            .css("position","relative")
+            .css("position", "relative")
             .after(this.toolbar)
             .toggle();
     };
