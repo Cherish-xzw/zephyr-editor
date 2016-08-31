@@ -1,62 +1,46 @@
-// var gulp = require('gulp');
-
-// gulp.task('build', function () {
-
-// });
-
-// gulp.task('watch', ['build'], function () {
-//     gulp.watch('./src/js/*.js', ['build']);
-// });
-
-// gulp.task('default', ['build', 'watch']);
-var cssmin = require('gulp-minify-css'),
-    jspm = require('gulp-jspm-build'),
-    gulp = require('gulp'),
-    clean = require('gulp-clean');
+var gulp = require('gulp');
+var concat = require('gulp-concat');
+var uglify = require('gulp-uglify');
+var imagemin = require('gulp-imagemin');
+var sourcemaps = require('gulp-sourcemaps');
+var del = require('del');
 
 var paths = {
-    app: 'src',
-    css: {
-        files: ['src/css/*.css']
-    },
-    external_css: [
-
-    ],
-
-    dest: './dist/'
+    scripts: "src/*.js",
+    images: 'images/**/*'
 };
 
-// concat and minify CSS files
-gulp.task('minify-css', function () {
-    return gulp.src(paths.css.files)
-        .pipe(cssmin({}))
-        .pipe(gulp.dest(paths.dest + 'css'));
+// Not all tasks need to use streams
+// A gulpfile is just another node program and you can use any package available on npm
+gulp.task('clean', function() {
+    // You can use multiple globbing patterns as you would with `gulp.src`
+    return del(['build']);
 });
 
-// copy external css
-gulp.task('copy-external-css', function () {
-    return gulp.src(paths.external_css)
-        .pipe(gulp.dest(paths.dest + 'lib/css'));
+gulp.task('scripts', ['clean'], function() {
+    // Minify and copy all JavaScript (except vendor scripts)
+    // with sourcemaps all the way down
+    return gulp.src(paths.scripts)
+        .pipe(sourcemaps.init())
+        .pipe(uglify())
+        .pipe(concat('jquery.zephyr.min.js'))
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('build/js'));
 });
 
-// build JSPM modules
-gulp.task('jspm', function () {
-    jspm({
-        bundleOptions: {
-            minify: true,
-            mangle: true
-        },
-        bundles: [
-            { src: 'src/app/main', dst: 'main.js' }
-        ]
-    })
-        .pipe(gulp.dest(paths.dest + "app"));
+// Copy all static images
+gulp.task('images', ['clean'], function() {
+    return gulp.src(paths.images)
+    // Pass in options to the task
+        .pipe(imagemin({optimizationLevel: 5}))
+        .pipe(gulp.dest('build/img'));
 });
 
-// clean dest
-gulp.task('clean', function () {
-    return gulp.src(paths.dest)
-        .pipe(clean());
+// Rerun the task when a file changes
+gulp.task('watch', function() {
+    gulp.watch(paths.scripts, ['scripts']);
+    gulp.watch(paths.images, ['images']);
 });
 
-gulp.task('build', ['minify-css', 'copy-external-css', 'jspm'], function () { });
+// The default task (called when you run `gulp` from cli)
+gulp.task('default', ['watch', 'scripts', 'images']);

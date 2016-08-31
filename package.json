@@ -19,40 +19,23 @@
   },
   "homepage": "https://github.com/Cherish-xzw/zephyr-editor#readme",
   "dependencies": {
-    "formidable": "^1.0.17",
-    "jquery": ">=1.5"
+    "formidable": "^1.0.17"
   },
   "devDependencies": {
+    "del": "^2.2.2",
     "gulp": "3.9.0",
     "gulp-clean": "^0.3.2",
-    "gulp-jspm-build": "0.0.15",
-    "gulp-minify-css": "^1.2.2",
-    "gulp-util": "3.0.1",
-    "jspm": "^0.16.14"
+    "gulp-concat": "^2.6.0",
+    "gulp-imagemin": "^3.0.3",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "latest"
   },
   "directories": {
     "test": "test",
-    "baseURL": "src",
-    "packages": "jspm_packages"
+    "baseURL": "src"
   },
   "scripts": {
     "start": "node index.js",
-    "build": "gulp build",
-    "prepublish": "jspm install"
-  },
-  "jspm": {
-    "directories": {
-      "baseURL": ".",
-      "packages": "jspm_packages",
-      "test": "test"
-    },
-    "dependencies": {
-      "jquery": "npm:jquery@^2.2.0"
-    },
-    "devDependencies": {
-      "babel": "npm:babel-core@^5.8.24",
-      "babel-runtime": "npm:babel-runtime@^5.8.24",
-      "core-js": "npm:core-js@^1.1.4"
-    }
+    "build": "gulp build"
   }
 }
