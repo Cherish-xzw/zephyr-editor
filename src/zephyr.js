@@ -102,20 +102,20 @@ RichTextEditor.prototype = {
 
     iconsHtml : function(){
         var builder = [],
-        j = 0,
-        _drawRow = function(builder,i){
-            builder.push('<tr>');
-            for(var i=0;i<6;i++){
-                j++;
-                _drawCell(builder,j);
-            }
-            builder.push('</tr>');
-        },
-        _drawCell = function(builder,j){
-            var url = 'images/emoticons/face'+j+'.gif';
-            builder.push('<td style="background:url('+url+') center center no-repeat; width:21px;height:21px;"');
-            builder.push(' url="'+url+'">&nbsp;</td>')
-        };
+            j = 0,
+            _drawRow = function(builder,i){
+                builder.push('<tr>');
+                for(var i=0;i<6;i++){
+                    j++;
+                    _drawCell(builder,j);
+                }
+                builder.push('</tr>');
+            },
+            _drawCell = function(builder,j){
+                var url = 'images/emoticons/face'+j+'.gif';
+                builder.push('<td style="background:url('+url+') center center no-repeat; width:21px;height:21px;"');
+                builder.push(' url="'+url+'">&nbsp;</td>')
+            };
         builder.push('<table border="1">');
         for(var i=0 ;i<6;i++){
             _drawRow(builder,i);
@@ -126,13 +126,13 @@ RichTextEditor.prototype = {
 
     tableHtml: function(){
         var _drawInput = function(builder, name, value){
-            builder.push('<input id="');
-            builder.push(name);
-            builder.push('" value="');
-            builder.push(value);
-            builder.push('" />');
-        },
-        builder = [];
+                builder.push('<input id="');
+                builder.push(name);
+                builder.push('" value="');
+                builder.push(value);
+                builder.push('" />');
+            },
+            builder = [];
         builder.push('<table>');
         builder.push('<tr><td colspan="2" style="padding:2px" bgcolor="#D0E8FC">');
         builder.push('插入表格');
@@ -171,29 +171,29 @@ RichTextEditor.prototype = {
     //用于生成颜色选择器的具体内容
     colorPickerHtml : function(){
         var  _hex = ['FF', 'CC', '99', '66', '33', '00'],
-        builder = [],
+            builder = [],
         // 呈现一个颜色格
-        _drawCell = function(builder, red, green, blue){
-            builder.push('<td bgcolor="');
-            builder.push('#' + red + green + blue);
-            builder.push('" unselectable="on"></td>');
-        },
+            _drawCell = function(builder, red, green, blue){
+                builder.push('<td bgcolor="');
+                builder.push('#' + red + green + blue);
+                builder.push('" unselectable="on"></td>');
+            },
         // 呈现一行颜色
-        _drawRow = function(builder, red, blue){
-            builder.push('<tr>');
-            for (var i = 0; i < 6; ++i) {
-                _drawCell(builder, red, _hex[i], blue)
-            }
-            builder.push('</tr>');
-        },
+            _drawRow = function(builder, red, blue){
+                builder.push('<tr>');
+                for (var i = 0; i < 6; ++i) {
+                    _drawCell(builder, red, _hex[i], blue)
+                }
+                builder.push('</tr>');
+            },
         // 呈现六个颜色区之一
-        _drawTable = function(builder, blue){
-            builder.push('<table class="cell" unselectable="on">');
-            for (var i = 0; i < 6; ++i) {
-                _drawRow(builder, _hex[i], blue)
-            }
-            builder.push('</table>');
-        };
+            _drawTable = function(builder, blue){
+                builder.push('<table class="cell" unselectable="on">');
+                for (var i = 0; i < 6; ++i) {
+                    _drawRow(builder, _hex[i], blue)
+                }
+                builder.push('</table>');
+            };
         //开始创建
         builder.push('<div><table><tr>');
         for (var i = 0; i < 3; ++i) {
@@ -223,11 +223,13 @@ RichTextEditor.prototype = {
     },
     drawEditor:function(id){
         var $ = this,
-        textarea = this.ID(id),
-        toolbar = this.CE('div'),
-        br = this.CE('br'),//用于清除浮动
-        iframe = this.CE('iframe');
+            textarea = this.ID(id),
+            toolbar = this.CE('div'),
+            br = this.CE('br'),//用于清除浮动
+            iframe = this.CE('iframe');
         $.hide(textarea);
+        textarea.style.width = "600px";
+        textarea.style.height = "300px";
         textarea.parentNode.insertBefore(toolbar,textarea);
         textarea.parentNode.insertBefore(br,textarea);
         textarea.parentNode.insertBefore(iframe,textarea);
@@ -238,7 +240,7 @@ RichTextEditor.prototype = {
         var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
         iframeDocument.designMode = "on";
         iframeDocument.open();
-        iframeDocument.write('<html><head><style type="text/css">body{ font-family:arial; font-size:13px;background:#DDF3FF;border:0; }</style></head></html>');
+        iframeDocument.write('<html><head><style type="text/css">body{ font-family:arial; font-size:13px; }</style></head></html>');
         iframeDocument.close();
 
         var buttons = {//工具栏的按钮集合
@@ -266,17 +268,17 @@ RichTextEditor.prototype = {
             'emoticons':['表情',-60,-20,20,20]
         };
         var fontFamilies = ['宋体','经典中圆简','微软雅黑', '黑体', '楷体', '隶书', '幼圆',
-        'Arial', 'Arial Narrow', 'Arial Black', 'Comic Sans MS',
-        'Courier New', 'Georgia', 'New Roman Times', 'Verdana']
+            'Arial', 'Arial Narrow', 'Arial Black', 'Comic Sans MS',
+            'Courier New', 'Georgia', 'New Roman Times', 'Verdana']
         var fontSizes= [[1, 'xx-small', '特小'],
-        [2, 'x-small', '很小'],
-        [3, 'small', '小'],
-        [4, 'medium', '中'],
-        [5, 'large', '大'],
-        [6, 'x-large', '很大'],
-        [7, 'xx-large', '特大']];
+            [2, 'x-small', '很小'],
+            [3, 'small', '小'],
+            [4, 'medium', '中'],
+            [5, 'large', '大'],
+            [6, 'x-large', '很大'],
+            [7, 'xx-large', '特大']];
         var buttonClone = $.CE("a"),
-        fragment = document.createDocumentFragment();
+            fragment = document.createDocumentFragment();
         buttonClone.className = 'bn';
         for (var i in buttons){/*添加命令按钮的名字，样式*/
             var button = buttonClone.cloneNode("true");
@@ -297,8 +299,8 @@ RichTextEditor.prototype = {
         toolbar.appendChild(fragment);
         $.addEvent(toolbar, 'click', function(){
             var e = arguments[0] || window.event,
-            target = e.srcElement ? e.srcElement : e.target,
-            command = target.getAttribute("command");
+                target = e.srcElement ? e.srcElement : e.target,
+                command = target.getAttribute("command");
             switch (command){
                 case 'createlink':
                 case 'insertimage':
@@ -348,10 +350,10 @@ RichTextEditor.prototype = {
         /******************************************************************/
         $.addEvent(popup,'click',function(){
             var e = arguments[0] || window.event,
-            element = e.srcElement ? e.srcElement : e.target,
-            command = this.getAttribute("title"),
-            id = this.getAttribute("id"),
-            tag = element.nodeName.toLowerCase();
+                element = e.srcElement ? e.srcElement : e.target,
+                command = this.getAttribute("title"),
+                id = this.getAttribute("id"),
+                tag = element.nodeName.toLowerCase();
             switch (id){
                 case "fontpicker":
                     if(tag == 'a'){
@@ -374,10 +376,10 @@ RichTextEditor.prototype = {
                     break;
                 case "tablecreator":
                     var submit = $.ID('rte_submit'),
-                    cancel = $.ID('rte_cancel'),
-                    rows = $.ID('rows').value,
-                    cols = $.ID('cols').value,
-                    width = $.ID('width').value;
+                        cancel = $.ID('rte_cancel'),
+                        rows = $.ID('rows').value,
+                        cols = $.ID('cols').value,
+                        width = $.ID('width').value;
                     if(element==cancel) {
                         $.hide(this);
                     }else if(element==submit){
@@ -400,10 +402,10 @@ RichTextEditor.prototype = {
             var id = this.getAttribute("id");
             if(id == "colorpicker"){
                 var e = arguments[0] || window.event,
-                element = e.srcElement ? e.srcElement : e.target,
-                tag = element.nodeName.toLowerCase(),
-                colorView = $.ID('color_view'),
-                colorCode = $.ID('color_code');
+                    element = e.srcElement ? e.srcElement : e.target,
+                    tag = element.nodeName.toLowerCase(),
+                    colorView = $.ID('color_view'),
+                    colorCode = $.ID('color_code');
                 if( 'td' == tag){
                     colorView.style.backgroundColor = element.bgColor;
                     colorCode.innerHTML = element.bgColor;
@@ -451,7 +453,7 @@ RichTextEditor.prototype = {
                     range = iframeDocument.createRange();
                 }
                 var oFragment = range.createContextualFragment(html),
-                oLastNode = oFragment.lastChild ;
+                    oLastNode = oFragment.lastChild ;
                 range.insertNode(oFragment) ;
                 range.setEndAfter(oLastNode ) ;
                 range.setStartAfter(oLastNode );
@@ -523,11 +525,11 @@ RichTextEditor.prototype = {
 
         /****************************************************************/
         _add_sheet('\
-          #RTE_iframe{width:600px;height:300px;}\
-          #RTE_toolbar{float:left;width:600px;background:#D5F3F4;}\
+          #RTE_iframe{width:600px;height:300px;border:1px Black solid}\
+          #RTE_toolbar{width:600px;text-align: center;margin: 0 auto;border:1px Black}\
           #RTE_toolbar select{float:left;height:20px;width:60px;margin-right:5px;}\
           #RTE_toolbar .bn {display:block;float:left; text-decoration:none;border:1px solid;\
-          border-color:#ccc #f3f8fc #f3f8fc #ccc;margin:2px 2px 5px;background-image: url(images/tinymce.gif)};\
+          border-color:#ccc #f3f8fc #f3f8fc #ccc;margin:2px 2px 5px;background-image: url(../images/tinymce.gif)};\
           #RTE_toolbar .bn:hover{color:#fff;border-color:#fff #aaa #aaa #fff;}\
           div#fontpicker{display:none;height:150px;width:150px;overflow:auto;position:absolute;\
              border:2px solid #c3c9cf;background:#F1FAFA;}\

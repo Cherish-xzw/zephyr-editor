@@ -7,9 +7,11 @@
 </head>
 <script src="../external/jquery/jquery.js"></script>
 <script src="../src/jquery.zephyr.js"></script>
+<script src="../src/zephyr.js"></script>
 <script>
         $(document).ready(function(){
-            $("#text").zephyr();
+//            $("#text").zephyr();
+			new RichTextEditor({textarea_id:"text"})
         });
 </script>
 <style>
